@@ -17,7 +17,7 @@ export default function LoginScreen() {
 
       if (token) {
         await AsyncStorage.setItem("token", token);
-        router.push("/profile"); // ✅ navigates only when token exists
+        router.push("/profile"); //
       } else {
         setError("Login failed. Please try again.");
       }
