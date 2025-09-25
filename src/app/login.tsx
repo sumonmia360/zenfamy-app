@@ -1,23 +1,26 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { NativeStackScreenProps } from "@react-navigation/native-stack";
+import { useRouter } from "expo-router";
 import React, { useState } from "react";
 import { Button, StyleSheet, Text, TextInput, View } from "react-native";
-import { RootStackParamList } from "../App";
 import API from "../services/api";
 
-type Props = NativeStackScreenProps<RootStackParamList, "Login">;
-
-export default function LoginScreen({ navigation }: Props) {
+export default function LoginScreen() {
   const [email, setEmail] = useState("shakisk23@gmail.com");
   const [password, setPassword] = useState("11111111");
   const [error, setError] = useState("");
+  const router = useRouter();
 
   const handleLogin = async () => {
     try {
       const res = await API.post("/auth/login", { email, password });
-      const token = res.data.access_token;
-      await AsyncStorage.setItem("token", token);
-      navigation.replace("Profile"); //
+      const token = res.data?.access_token;
+
+      if (token) {
+        await AsyncStorage.setItem("token", token);
+        router.push("/profile"); // ✅ navigates only when token exists
+      } else {
+        setError("Login failed. Please try again.");
+      }
     } catch (err: any) {
       setError("Invalid credentials");
     }
